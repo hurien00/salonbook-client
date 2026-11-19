@@ -1,3 +1,5 @@
+import { authClient } from '@/lib/auth-client';
+
 const API_BASE_URL =
   process.env.NEXT_PUBLIC_API_URL?.replace(/\/+$/, '') || 'http://localhost:5000';
 
@@ -20,11 +22,32 @@ function buildUrl(endpoint: string, params?: RequestOptions['params']): string {
   return url.toString();
 }
 
+async function getSessionHeaders(): Promise<Record<string, string>> {
+  try {
+    const sessionRes = await authClient.getSession();
+    const user = sessionRes?.data?.user as
+      | { id?: string; role?: string; email?: string }
+      | undefined;
+
+    const headers: Record<string, string> = {};
+    if (user?.role) {
+      headers['x-user-role'] = String(user.role);
+    }
+    if (user?.id) {
+      headers['x-user-id'] = String(user.id);
+    }
+    return headers;
+  } catch {
+    return {};
+  }
+}
+
 async function request<T = unknown>(endpoint: string, options: RequestOptions = {}): Promise<T> {
   const { params, headers, body, ...rest } = options;
   const url = buildUrl(endpoint, params);
 
   const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+  const sessionHeaders = await getSessionHeaders();
 
   const response = await fetch(url, {
     ...rest,
@@ -32,6 +55,7 @@ async function request<T = unknown>(endpoint: string, options: RequestOptions = 
     credentials: 'include',
     headers: {
       ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
+      ...sessionHeaders,
       ...headers,
     },
   });
