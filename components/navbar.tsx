@@ -2,8 +2,8 @@
 
 import React, { useEffect, useState } from 'react';
 import Link from 'next/link';
-import { usePathname } from 'next/navigation';
-import { useAuth } from '@/context/AuthContext';
+import { usePathname, useRouter } from 'next/navigation';
+import { useSession, signOut } from '@/lib/auth-client';
 import { cn } from '@/lib/utils';
 import {
   Scissors,
@@ -32,7 +32,7 @@ function NavLink({
       href={href}
       className={cn(
         'relative py-1.5 text-sm font-medium transition-colors',
-        active ? 'text-salon-900' : 'text-stone-600 hover:text-salon-900',
+        active ? 'text-[#422719]' : 'text-stone-600 hover:text-[#422719]',
       )}
     >
       {children}
@@ -47,8 +47,13 @@ function NavLink({
 }
 
 export default function Navbar() {
-  const { user, logout } = useAuth();
+  const { data: session } = useSession();
+  const user = session?.user as
+    | (typeof session extends { user: infer U } ? U & { role?: string } : { name: string; email: string; image?: string | null; role?: string })
+    | undefined;
+
   const pathname = usePathname();
+  const router = useRouter();
   const [dropdownOpen, setDropdownOpen] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
@@ -57,7 +62,12 @@ export default function Navbar() {
 
   const isActive = (path: string) => pathname === path;
 
-  // subtle lift once the page scrolls
+  const handleLogout = async () => {
+    await signOut();
+    router.refresh();
+    router.push('/signin');
+  };
+
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 8);
     onScroll();
@@ -65,7 +75,6 @@ export default function Navbar() {
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
-  // close any open menus after navigating
   useEffect(() => {
     setDropdownOpen(false);
     setMobileMenuOpen(false);
@@ -84,15 +93,15 @@ export default function Navbar() {
         <div className="flex h-18 items-center justify-between gap-4">
           {/* Logo / Name: SalonBook */}
           <Link href="/" className="group flex items-center gap-3">
-            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-salon-900 shadow-md shadow-salon-900/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
+            <div className="flex h-11 w-11 items-center justify-center rounded-2xl bg-[#422719] shadow-md shadow-[#422719]/20 transition-transform duration-300 group-hover:-rotate-6 group-hover:scale-105">
               <Scissors className="h-5 w-5 text-amber-300" strokeWidth={1.75} />
             </div>
             <div className="leading-tight">
-              <span className="block font-serif text-xl font-bold tracking-tight text-salon-900">
+              <span className="block font-serif text-xl font-bold tracking-tight text-[#422719]">
                 Salon<span className="text-amber-700">Book</span>
               </span>
               <span className="block text-[10px] font-medium uppercase tracking-[0.18em] text-stone-500">
-                Luxury &amp; Care
+                Luxury & Care
               </span>
             </div>
           </Link>
@@ -133,7 +142,7 @@ export default function Navbar() {
                     className="h-8 w-8 rounded-full object-cover ring-2 ring-amber-200"
                   />
                   <span className="text-left">
-                    <span className="block max-w-[9rem] truncate text-xs font-semibold text-salon-900">
+                    <span className="block max-w-[9rem] truncate text-xs font-semibold text-[#422719]">
                       {user.name}
                     </span>
                     <span className="block text-[10px] font-medium uppercase tracking-wide text-amber-700">
@@ -160,7 +169,7 @@ export default function Navbar() {
                         <p className="text-[10px] font-medium uppercase tracking-wide text-stone-400">
                           Signed in as
                         </p>
-                        <p className="truncate text-sm font-medium text-salon-900">{user.name}</p>
+                        <p className="truncate text-sm font-medium text-[#422719]">{user.name}</p>
                         <p className="truncate text-xs text-stone-500">{user.email}</p>
                       </div>
 
@@ -190,7 +199,7 @@ export default function Navbar() {
                         type="button"
                         onClick={() => {
                           setDropdownOpen(false);
-                          void logout();
+                          void handleLogout();
                         }}
                         className="flex w-full items-center gap-2.5 px-4 py-2.5 text-sm text-rose-600 transition-colors hover:bg-rose-50"
                       >
@@ -205,13 +214,13 @@ export default function Navbar() {
               <div className="flex items-center gap-2">
                 <Link
                   href="/signin"
-                  className="rounded-full px-4 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-salon-900"
+                  className="rounded-full px-4 py-2 text-sm font-medium text-stone-600 transition-colors hover:bg-stone-100 hover:text-[#422719]"
                 >
                   Sign In
                 </Link>
                 <Link
                   href="/signup"
-                  className="rounded-full bg-salon-900 px-5 py-2 text-sm font-medium text-white shadow-md shadow-salon-900/20 transition-all hover:bg-salon-800 hover:shadow-lg"
+                  className="rounded-full bg-[#422719] px-5 py-2 text-sm font-medium text-white shadow-md shadow-[#422719]/20 transition-all hover:bg-[#331d12] hover:shadow-lg"
                 >
                   Sign Up
                 </Link>
@@ -271,7 +280,7 @@ export default function Navbar() {
                   className="h-10 w-10 rounded-full object-cover ring-2 ring-amber-200"
                 />
                 <div className="leading-tight">
-                  <p className="font-semibold text-salon-900">{user.name}</p>
+                  <p className="font-semibold text-[#422719]">{user.name}</p>
                   <p className="text-xs font-medium uppercase tracking-wide text-amber-700">
                     {user.role ?? 'customer'}
                   </p>
@@ -295,7 +304,7 @@ export default function Navbar() {
                 type="button"
                 onClick={() => {
                   setMobileMenuOpen(false);
-                  void logout();
+                  void handleLogout();
                 }}
                 className="block w-full rounded-xl px-3 py-2.5 text-left text-sm font-medium text-rose-600 transition-colors hover:bg-rose-50"
               >
@@ -314,7 +323,7 @@ export default function Navbar() {
               <Link
                 href="/signup"
                 onClick={() => setMobileMenuOpen(false)}
-                className="w-full rounded-xl bg-salon-900 py-2.5 text-center font-medium text-white shadow-md shadow-salon-900/20 transition-colors hover:bg-salon-800"
+                className="w-full rounded-xl bg-[#422719] py-2.5 text-center font-medium text-white shadow-md shadow-[#422719]/20 transition-colors hover:bg-[#331d12]"
               >
                 Sign Up
               </Link>
