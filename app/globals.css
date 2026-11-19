@@ -47,6 +47,20 @@
     --radius-4xl: calc(var(--radius) * 2.6);
 }
 
+@theme {
+    --color-salon-50: #faf6f1;
+    --color-salon-100: #f2e9df;
+    --color-salon-200: #e4d3c1;
+    --color-salon-300: #d0b49b;
+    --color-salon-400: #b89273;
+    --color-salon-500: #a2765a;
+    --color-salon-600: #8b6049;
+    --color-salon-700: #704d3c;
+    --color-salon-800: #5b4134;
+    --color-salon-900: #3b2a21;
+    --color-salon-950: #241912;
+}
+
 :root {
     --background: oklch(1 0 0);
     --foreground: oklch(0.145 0 0);
