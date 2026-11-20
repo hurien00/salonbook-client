@@ -1,7 +1,7 @@
 'use client';
 
 import React, { useState, useEffect } from 'react';
-import { useAuth } from '@/context/AuthContext';
+import { useAuth, type AuthUser } from '@/context/AuthContext';
 import { api, uploadImageFile } from '@/lib/api';
 import { toast } from 'sonner';
 import {
@@ -110,21 +110,24 @@ export default function AdminProfilePage() {
       }
 
       const res = (await api.put('/auth/profile', payload)) as
-        | { success?: boolean; data?: typeof user; user?: typeof user }
-        | typeof user;
+        | { success?: boolean; data?: AuthUser | null; user?: AuthUser | null }
+        | AuthUser
+        | null;
 
-      const updatedProfile =
-        res && typeof res === 'object' && ('data' in res || 'user' in res)
-          ? res.data || res.user
-          : res;
+      const updatedProfile: AuthUser | null =
+        res && typeof res === 'object'
+          ? 'data' in res || 'user' in res
+            ? res.data ?? res.user ?? null
+            : (res as AuthUser)
+          : null;
 
-      if (updatedProfile && typeof updatedProfile === 'object') {
+      if (updatedProfile) {
         updateUser(updatedProfile);
         if (updatedProfile.image) {
           setImageUrl(updatedProfile.image);
           setPreviewUrl(updatedProfile.image);
         }
-      } else if (updateUser && user) {
+      } else if (user) {
         updateUser({
           ...user,
           name: trimmedName,

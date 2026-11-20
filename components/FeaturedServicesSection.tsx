@@ -94,7 +94,7 @@ function getSafeImageSrc(src?: string): string {
   return DEFAULT_SERVICE_IMAGE;
 }
 
-function getShortDescription(text: string, maxLength = 95): string {
+function getShortDescription(text: string | null | undefined, maxLength = 95): string {
   const clean = String(text || '').trim();
   if (clean.length <= maxLength) return clean;
   return `${clean.slice(0, maxLength).trimEnd()}...`;

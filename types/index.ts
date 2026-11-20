@@ -33,7 +33,16 @@ export interface Service {
   updatedAt?: string;
 }
 
-export type AppointmentStatus = 'pending' | 'confirmed' | 'cancelled' | 'completed';
+export type AppointmentStatus =
+  | 'pending'
+  | 'confirmed'
+  | 'cancelled'
+  | 'completed'
+  // The API can also return these capitalized variants
+  | 'Pending'
+  | 'Confirmed'
+  | 'Cancelled'
+  | 'Completed';
 
 export type PaymentStatus = 'pending' | 'paid' | 'failed' | 'refunded';
 
@@ -59,4 +68,11 @@ export interface AdminStats {
   confirmedAppointments: number;
   totalSuccessfulPayments: number;
   totalRevenue: number;
+}
+
+export interface CustomerStats {
+  total: number;
+  pending: number;
+  confirmed: number;
+  cancelled: number;
 }

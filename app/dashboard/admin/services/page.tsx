@@ -338,7 +338,7 @@ export default function AdminServicesPage() {
 
           <div>
             <label className="mb-1.5 block text-xs font-semibold uppercase tracking-wider text-stone-700">
-              Price <span className="text-rose-500">*</span>
+              Price (৳) <span className="text-rose-500">*</span>
             </label>
             <input
               type="number"
@@ -347,7 +347,7 @@ export default function AdminServicesPage() {
               required
               value={form.price}
               onChange={(e) => setForm((prev) => ({ ...prev, price: e.target.value }))}
-              placeholder="e.g., 85"
+              placeholder="e.g., 1500"
               className="w-full rounded-xl border border-stone-300 px-4 py-2.5 text-sm text-stone-800 focus:border-[#c56117] focus:outline-none focus:ring-2 focus:ring-amber-500/25"
             />
           </div>
