@@ -133,6 +133,7 @@ export default function AdminServicesPage() {
   };
 
   const handleEditClick = (service: Service) => {
+    if (!service._id) return;
     setEditingId(service._id);
     setForm({
       serviceName: service.serviceName,
@@ -515,7 +516,7 @@ export default function AdminServicesPage() {
                   </button>
                   <button
                     type="button"
-                    onClick={() => void handleDeleteClick(srv._id)}
+                    onClick={() => srv._id && void handleDeleteClick(srv._id)}
                     className="rounded-lg border border-rose-200 p-2 text-rose-600 hover:bg-rose-50"
                     title="Delete Service"
                   >

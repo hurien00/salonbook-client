@@ -2,8 +2,8 @@
 
 import React, { useState, useEffect, useCallback, Suspense } from 'react';
 import { useSearchParams } from 'next/navigation';
-import Navbar from '@/components/Navbar';
-import Footer from '@/components/Footer';
+import Navbar from '@/components/navbar';
+import Footer from '@/components/footer';
 import ServiceCard from '@/components/ServiceCard';
 import { Service } from '@/types';
 import { api } from '@/lib/api';

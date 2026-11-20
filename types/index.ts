@@ -27,6 +27,7 @@ export interface Service {
   duration?: number;
   category?: string;
   image?: string;
+  status?: 'active' | 'inactive';
   isActive?: boolean;
   createdAt?: string;
   updatedAt?: string;
