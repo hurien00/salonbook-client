@@ -36,6 +36,9 @@ async function getSessionHeaders(): Promise<Record<string, string>> {
     if (user?.id) {
       headers['x-user-id'] = String(user.id);
     }
+    if (user?.email) {
+      headers['x-user-email'] = String(user.email);
+    }
     return headers;
   } catch {
     return {};
@@ -78,6 +81,34 @@ async function request<T = unknown>(endpoint: string, options: RequestOptions = 
   }
 
   return data as T;
+}
+
+export async function uploadImageFile(file: File): Promise<string> {
+  const apiKey = process.env.NEXT_PUBLIC_IMGBB_API_KEY;
+  if (!apiKey) {
+    throw new Error('NEXT_PUBLIC_IMGBB_API_KEY is not configured');
+  }
+
+  const formData = new FormData();
+  formData.append('image', file);
+
+  const response = await fetch(`https://api.imgbb.com/1/upload?key=${encodeURIComponent(apiKey)}`, {
+    method: 'POST',
+    body: formData,
+  });
+
+  const data = (await response.json().catch(() => null)) as {
+    success?: boolean;
+    data?: { url?: string; display_url?: string };
+    error?: { message?: string };
+  } | null;
+
+  const uploadedUrl = data?.data?.url || data?.data?.display_url;
+  if (!response.ok || !data?.success || !uploadedUrl) {
+    throw new Error(data?.error?.message || 'Failed to upload image to ImgBB');
+  }
+
+  return uploadedUrl;
 }
 
 export const api = {
